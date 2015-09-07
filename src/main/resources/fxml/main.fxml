@@ -4,23 +4,34 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<VBox fx:controller="com.swehacker.SerialMonitor" xmlns:fx="http://javafx.com/fxml" styleClass="root" spacing="10">
+<VBox spacing="10" styleClass="root" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.swehacker.serialmonitor.SerialMonitor">
     <padding>
-        <Insets top="25" right="25" bottom="10" left="25"/>
+        <Insets bottom="10" left="25" right="25" top="25"/>
     </padding>
+    <children>
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <children>
+                <Label text="Port" contentDisplay="RIGHT"><graphic><ChoiceBox fx:id="port"/></graphic></Label>
+                <Label text="Baud" contentDisplay="RIGHT"><graphic><ChoiceBox fx:id="baudrate" onAction="#baudrateSelected"/></graphic></Label>
+                <VBox>
+                    <Label text="CR"><graphic><CheckBox fx:id="crCheckBox" selected="false" /></graphic></Label>
+                    <Label text="LF"><graphic><CheckBox fx:id="lfCheckBox" selected="true" /></graphic></Label>
+                </VBox>
+            </children>
+        </HBox>
+        <HBox alignment="CENTER_RIGHT" spacing="10">
+            <children>
+                <Button fx:id="btnSerialConnect" onAction="#serialConnect" text="Connect"/>
+                <Button fx:id="btnSerialClose" onAction="#serialClose" text="Disconnect"/>
+            </children>
+        </HBox>
 
-    <HBox spacing="10" alignment="CENTER_LEFT">
-        <Label text="Port"/>
-        <ChoiceBox fx:id="port" />
-        <Label text="Baud"/>
-        <ChoiceBox fx:id="baudrate" />
-        <Button text="Connect" onAction="#handleConnect"/>
-    </HBox>
+        <TextArea fx:id="response" editable="false"/>
 
-    <TextArea fx:id="response" disable="true" />
-
-    <HBox spacing="10" alignment="bottom_right">
-        <TextField fx:id="send" />
-        <Button text="Send"/>
-    </HBox>
+        <HBox fx:id="sendHBox">
+            <TextField fx:id="send" onAction="#serialSend"/>
+            <Button fx:id="btnSerialSend" onAction="#serialSend" text="Send"/>
+        </HBox>
+    </children>
 </VBox>
