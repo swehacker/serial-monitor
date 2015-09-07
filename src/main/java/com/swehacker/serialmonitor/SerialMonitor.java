@@ -157,14 +157,6 @@ public class SerialMonitor extends Application implements Initializable {
         }
     }
 
-    public void baudrateSelected() {
-        if ( baudrate.getValue() == null ) {
-            btnSerialConnect.setDisable(true);
-        } else {
-            btnSerialConnect.setDisable(false);
-        }
-    }
-
     private void openSerialPort() {
         serialPort = new SerialPort((String)port.getValue());
         try {

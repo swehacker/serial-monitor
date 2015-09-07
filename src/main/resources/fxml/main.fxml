@@ -21,7 +21,7 @@
                 </Label>
                 <Label text="Baud" contentDisplay="BOTTOM">
                     <graphic>
-                        <ChoiceBox fx:id="baudrate" onAction="#baudrateSelected"/>
+                        <ChoiceBox fx:id="baudrate" />
                     </graphic>
                 </Label>
                 <Label text="Databits" contentDisplay="BOTTOM">
