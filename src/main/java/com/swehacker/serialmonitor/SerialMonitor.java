@@ -44,21 +44,28 @@ import java.util.ResourceBundle;
 
 public class SerialMonitor extends Application implements Initializable {
 
-    private ObservableList<String> baudrates = FXCollections.observableArrayList("110", "300", "600", "1200", "2400", "4800", "9600", "14400", "19200", "28800", "38400", "56000", "57600", "115200");
     private ObservableList<String> portNames = FXCollections.observableArrayList(SerialPortList.getPortNames());
+    private ObservableList<String> baudrates = FXCollections.observableArrayList("110", "300", "600", "1200", "2400", "4800", "9600", "14400", "19200", "28800", "38400", "56000", "57600", "115200");
+    private ObservableList<String> databitList = FXCollections.observableArrayList("5", "6", "7", "8");
+    private ObservableList<String> stopbitList = FXCollections.observableArrayList("1", "2", "1.5");
+    private ObservableList<String> paritylist = FXCollections.observableArrayList("NONE", "ODD", "EVEN", "MARK", "SPACE");
 
     @FXML
     private ChoiceBox port;
     @FXML
     private ChoiceBox baudrate;
     @FXML
+    private ChoiceBox parity;
+    @FXML
+    private ChoiceBox stopbits;
+    @FXML
+    private ChoiceBox databits;
+    @FXML
     private TextArea response;
     @FXML
     private TextField send;
     @FXML
     private Button btnSerialConnect;
-    @FXML
-    private Button btnSerialClose;
     @FXML
     private Button btnSerialSend;
     @FXML
@@ -78,10 +85,19 @@ public class SerialMonitor extends Application implements Initializable {
         baudrate.setItems(baudrates);
         baudrate.setValue("9600");
 
+        databits.setItems(databitList);
+        databits.setValue(databitList.get(3));
+
+        stopbits.setItems(stopbitList);
+        stopbits.setValue(stopbitList.get(0));
+
+        parity.setItems(paritylist);
+        parity.setValue(paritylist.get(0));
+
         if (port.getValue() == null) {
             btnSerialConnect.setDisable(true);
         }
-        btnSerialClose.setDisable(true);
+
         btnSerialSend.setDisable(true);
         send.setEditable(false);
         HBox.setHgrow(send, Priority.ALWAYS);
@@ -101,17 +117,24 @@ public class SerialMonitor extends Application implements Initializable {
     }
 
     public void serialConnect() {
-        closeSerialPort();
-        openSerialPort();
+        if ( serialPort == null || !serialPort.isOpened() ) {
+            closeSerialPort();
+            openSerialPort();
+            btnSerialConnect.setText("Disconnect");
+        } else {
+            serialClose();
+            btnSerialConnect.setText("Connect");
+        }
     }
 
     public void serialClose() {
         closeSerialPort();
-        btnSerialConnect.setDisable(false);
-        btnSerialClose.setDisable(true);
         btnSerialSend.setDisable(true);
         send.setEditable(false);
         baudrate.setDisable(false);
+        stopbits.setDisable(false);
+        databits.setDisable(false);
+        parity.setDisable(false);
         port.setDisable(false);
     }
 
@@ -146,7 +169,7 @@ public class SerialMonitor extends Application implements Initializable {
         serialPort = new SerialPort((String)port.getValue());
         try {
             serialPort.openPort();
-            serialPort.setParams(Integer.parseInt((String)baudrate.getValue()), 8, 1, 0);//Set params
+            serialPort.setParams(Integer.parseInt((String)baudrate.getValue()), Databits.getBits((String)databits.getValue()), Stopbits.getBits((String)stopbits.getValue()), Parity.valueOf((String)parity.getValue()).getParity());//Set params
             int mask = SerialPort.MASK_RXCHAR + SerialPort.MASK_CTS + SerialPort.MASK_DSR;
             serialPort.setEventsMask(mask);
             serialPort.addEventListener(event -> {
@@ -165,11 +188,12 @@ public class SerialMonitor extends Application implements Initializable {
                 }
             });
 
-            btnSerialConnect.setDisable(true);
-            btnSerialClose.setDisable(false);
             btnSerialSend.setDisable(false);
             send.setEditable(true);
             baudrate.setDisable(true);
+            stopbits.setDisable(true);
+            databits.setDisable(true);
+            parity.setDisable(true);
             port.setDisable(true);
         } catch (SerialPortException ex) {
             response.appendText(ex.getMessage() + "\n");

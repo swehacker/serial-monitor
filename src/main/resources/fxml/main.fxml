@@ -2,28 +2,60 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <VBox spacing="10" styleClass="root" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.swehacker.serialmonitor.SerialMonitor">
     <padding>
         <Insets bottom="10" left="25" right="25" top="25"/>
     </padding>
     <children>
-        <HBox alignment="CENTER_LEFT" spacing="10">
-            <children>
-                <Label text="Port" contentDisplay="RIGHT"><graphic><ChoiceBox fx:id="port"/></graphic></Label>
-                <Label text="Baud" contentDisplay="RIGHT"><graphic><ChoiceBox fx:id="baudrate" onAction="#baudrateSelected"/></graphic></Label>
-                <VBox>
-                    <Label text="CR"><graphic><CheckBox fx:id="crCheckBox" selected="false" /></graphic></Label>
-                    <Label text="LF"><graphic><CheckBox fx:id="lfCheckBox" selected="true" /></graphic></Label>
-                </VBox>
-            </children>
+        <HBox alignment="BOTTOM_RIGHT">
+            <Button fx:id="btnSerialConnect" onAction="#serialConnect" text="Connect"/>
         </HBox>
-        <HBox alignment="CENTER_RIGHT" spacing="10">
+        <HBox alignment="BASELINE_LEFT" spacing="10">
             <children>
-                <Button fx:id="btnSerialConnect" onAction="#serialConnect" text="Connect"/>
-                <Button fx:id="btnSerialClose" onAction="#serialClose" text="Disconnect"/>
+                <Label text="Port" contentDisplay="BOTTOM">
+                    <graphic>
+                        <ChoiceBox fx:id="port"/>
+                    </graphic>
+                </Label>
+                <Label text="Baud" contentDisplay="BOTTOM">
+                    <graphic>
+                        <ChoiceBox fx:id="baudrate" onAction="#baudrateSelected"/>
+                    </graphic>
+                </Label>
+                <Label text="Databits" contentDisplay="BOTTOM">
+                    <graphic>
+                        <ChoiceBox fx:id="databits"/>
+                    </graphic>
+                </Label>
+                <Label text="Stopbits" contentDisplay="BOTTOM">
+                    <graphic>
+                        <ChoiceBox fx:id="stopbits"/>
+                    </graphic>
+                </Label>
+                <Label text="Parity" contentDisplay="BOTTOM">
+                    <graphic>
+                        <ChoiceBox fx:id="parity"/>
+                    </graphic>
+                </Label>
+                <Label text="Line" contentDisplay="BOTTOM">
+                    <graphic>
+                        <VBox>
+                            <Label text="CR">
+                                <graphic>
+                                    <CheckBox fx:id="crCheckBox" selected="false"/>
+                                </graphic>
+                            </Label>
+                            <Label text="LF">
+                                <graphic>
+                                    <CheckBox fx:id="lfCheckBox" selected="true"/>
+                                </graphic>
+                            </Label>
+
+                        </VBox>
+                    </graphic>
+                </Label>
             </children>
         </HBox>
 

@@ -12,4 +12,14 @@ public enum Databits {
     }
 
     public int getBits() { return bits; }
+
+    public static int getBits(String str) {
+        try {
+            return Integer.parseInt(str);
+        } catch (NumberFormatException nfe) {
+            nfe.printStackTrace();
+        }
+
+        return 8;
+    }
 }
