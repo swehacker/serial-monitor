@@ -33,6 +33,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -40,6 +41,8 @@ import javafx.stage.Stage;
 import jssc.*;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class SerialMonitor extends Application implements Initializable {
@@ -75,6 +78,9 @@ public class SerialMonitor extends Application implements Initializable {
 
     private SerialPort serialPort;
 
+    private List<String> commandHistory = new ArrayList<>(1000);
+    private int commandIndex = 0;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         port.setItems(portNames);
@@ -102,6 +108,28 @@ public class SerialMonitor extends Application implements Initializable {
         send.setEditable(false);
         HBox.setHgrow(send, Priority.ALWAYS);
         VBox.setVgrow(response, Priority.ALWAYS);
+
+        send.setOnKeyReleased(event -> {
+            if ( KeyCode.UP == event.getCode() && !commandHistory.isEmpty() ) {
+                send.setText(commandHistory.get(commandIndex));
+                if ( commandIndex > 0 ) {
+                    commandIndex--;
+                }
+            }
+
+            if ( KeyCode.DOWN == event.getCode() && !commandHistory.isEmpty() ) {
+                if ( commandIndex < (commandHistory.size() -1)) {
+                    send.setText(commandHistory.get(++commandIndex));
+                } else {
+                    send.setText("");
+                }
+
+            }
+
+            if ( KeyCode.ENTER == event.getCode() ) {
+                commandIndex = commandHistory.size() - 1;
+            }
+        });
     }
 
     @Override
@@ -141,6 +169,7 @@ public class SerialMonitor extends Application implements Initializable {
     public void serialSendAction() {
         try {
             response.appendText(send.getText() + "\n");
+            commandHistory.add(send.getText());
             serialPort.writeString(send.getText());
 
             if (crCheckBox.isSelected()) {
