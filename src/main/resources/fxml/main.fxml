@@ -62,8 +62,8 @@
         <TextArea fx:id="response" editable="false"/>
 
         <HBox fx:id="sendHBox">
-            <TextField fx:id="send" onAction="#serialSend"/>
-            <Button fx:id="btnSerialSend" onAction="#serialSend" text="Send"/>
+            <TextField fx:id="send" onAction="#serialSendAction"/>
+            <Button fx:id="btnSerialSend" onAction="#serialSendAction" text="Send"/>
         </HBox>
     </children>
 </VBox>

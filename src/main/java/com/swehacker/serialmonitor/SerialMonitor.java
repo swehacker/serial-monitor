@@ -122,12 +122,12 @@ public class SerialMonitor extends Application implements Initializable {
             openSerialPort();
             btnSerialConnect.setText("Disconnect");
         } else {
-            serialClose();
+            serialCloseAction();
             btnSerialConnect.setText("Connect");
         }
     }
 
-    public void serialClose() {
+    public void serialCloseAction() {
         closeSerialPort();
         btnSerialSend.setDisable(true);
         send.setEditable(false);
@@ -138,7 +138,7 @@ public class SerialMonitor extends Application implements Initializable {
         port.setDisable(false);
     }
 
-    public void serialSend() {
+    public void serialSendAction() {
         try {
             response.appendText(send.getText() + "\n");
             serialPort.writeString(send.getText());
