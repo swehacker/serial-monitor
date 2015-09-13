@@ -25,6 +25,7 @@
 package com.swehacker.serialmonitor;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -38,7 +39,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import jssc.*;
+import jssc.SerialPort;
+import jssc.SerialPortException;
+import jssc.SerialPortList;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -84,7 +87,7 @@ public class SerialMonitor extends Application implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         port.setItems(portNames);
-        if ( !portNames.isEmpty() ) {
+        if (!portNames.isEmpty()) {
             port.setValue(portNames.get(0));
         }
 
@@ -110,15 +113,15 @@ public class SerialMonitor extends Application implements Initializable {
         VBox.setVgrow(response, Priority.ALWAYS);
 
         send.setOnKeyReleased(event -> {
-            if ( KeyCode.UP == event.getCode() && !commandHistory.isEmpty() ) {
+            if (KeyCode.UP == event.getCode() && !commandHistory.isEmpty()) {
                 send.setText(commandHistory.get(commandIndex));
-                if ( commandIndex > 0 ) {
+                if (commandIndex > 0) {
                     commandIndex--;
                 }
             }
 
-            if ( KeyCode.DOWN == event.getCode() && !commandHistory.isEmpty() ) {
-                if ( commandIndex < (commandHistory.size() -1)) {
+            if (KeyCode.DOWN == event.getCode() && !commandHistory.isEmpty()) {
+                if (commandIndex < (commandHistory.size() - 1)) {
                     send.setText(commandHistory.get(++commandIndex));
                 } else {
                     send.setText("");
@@ -126,7 +129,7 @@ public class SerialMonitor extends Application implements Initializable {
 
             }
 
-            if ( KeyCode.ENTER == event.getCode() ) {
+            if (KeyCode.ENTER == event.getCode()) {
                 commandIndex = commandHistory.size() - 1;
             }
         });
@@ -145,7 +148,7 @@ public class SerialMonitor extends Application implements Initializable {
     }
 
     public void serialConnect() {
-        if ( serialPort == null || !serialPort.isOpened() ) {
+        if (serialPort == null || !serialPort.isOpened()) {
             closeSerialPort();
             openSerialPort();
             btnSerialConnect.setText("Disconnect");
@@ -187,22 +190,17 @@ public class SerialMonitor extends Application implements Initializable {
     }
 
     private void openSerialPort() {
-        serialPort = new SerialPort((String)port.getValue());
+        serialPort = new SerialPort((String) port.getValue());
         try {
             serialPort.openPort();
-            serialPort.setParams(Integer.parseInt((String)baudrate.getValue()), Databits.getBits((String)databits.getValue()), Stopbits.getBits((String)stopbits.getValue()), Parity.valueOf((String)parity.getValue()).getParity());//Set params
-            int mask = SerialPort.MASK_RXCHAR + SerialPort.MASK_CTS + SerialPort.MASK_DSR;
-            serialPort.setEventsMask(mask);
+            serialPort.setParams(Integer.parseInt((String) baudrate.getValue()), Databits.getBits((String) databits.getValue()), Stopbits.getBits((String) stopbits.getValue()), Parity.valueOf((String) parity.getValue()).getParity());//Set params
             serialPort.addEventListener(event -> {
-                StringBuilder inputBuffer = new StringBuilder();
-                if (event.isRXCHAR() && event.getEventValue() > 0) {
+                if (event.isRXCHAR()) {
                     try {
                         byte buffer[] = serialPort.readBytes();
-                        for (byte b : buffer) {
-                            inputBuffer.append((char) b);
-                        }
-
-                        response.appendText(inputBuffer.toString());
+                        Platform.runLater(() -> {
+                            response.appendText(new String(buffer));
+                        });
                     } catch (SerialPortException ex) {
                         response.appendText(ex.getMessage() + "\n");
                     }
