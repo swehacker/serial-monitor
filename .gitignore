@@ -5,3 +5,8 @@ gradle/
 .gradle/
 gradlew
 gradlew.bat
+.DS_Store
+out/
+src/.DS_Store
+src/main/.DS_Store
+src/test/
